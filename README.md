@@ -27,7 +27,7 @@ notebooks/            notebook Colab per lanciare gli esperimenti
 splat_editing/        Parte 2: operazioni stain / missing / burr e generazione del dataset sintetico
 detector/             Parte 3: head single-stream e two-stream, training e valutazione
 extensions/           estensione scelta
-results/              SOLO file piccoli: metrics.csv e tabelle per il report
+results/              SOLO le tabelle finali per il report (il metrics.csv "vivo" sta su Drive)
 ```
 
 ## Cosa va su GitHub e cosa su Drive
@@ -35,11 +35,59 @@ results/              SOLO file piccoli: metrics.csv e tabelle per il report
 | GitHub (questo repo) | Google Drive (cartella `aml-project-2`) |
 | --- | --- |
 | Codice `.py`, notebook **senza output** | Dataset MAD-Sim / MAD-Real (`.zip`) |
-| `results/metrics.csv`, piccole tabelle | Splat addestrati (`.ply`), checkpoint (`.pth`) |
+| Tabelle finali per il report (`results/`) | Splat addestrati (`.ply`), checkpoint (`.pth`), `metrics.csv` |
 | README e documentazione | Pose stimate, reference, anomaly map, dataset sintetico |
 
 Il dataset MAD non va mai pubblicato qui (repo pubblico + diritti del dataset). Il `.gitignore` blocca già i
 formati pesanti più comuni, ma controllate sempre `git status` prima di un commit.
+
+## Come lavoriamo su Google Drive
+
+La cartella condivisa è `aml-project-2`. Ognuno la aggiunge al proprio Drive (*Condivisi con me* → clic destro →
+*Organizza → Aggiungi scorciatoia → Il mio Drive*), così su Colab il percorso è uguale per tutti:
+`/content/drive/MyDrive/aml-project-2`.
+
+Principio: **ognuno scrive solo nella propria zona e legge da quelle degli altri; non si sovrascrive mai nulla**
+(una nuova versione va in una nuova cartella).
+
+| Cartella | Contenuto | Chi scrive | Chi legge |
+| --- | --- | --- | --- |
+| `data/` | `MAD-Sim.zip` originale, `MAD-Sim_3dgs.zip` (da `prepare_lego_ad.py`), `model.zip` (retrieval per `PAD_utils`) | P1, una volta sola | Tutti, a ogni sessione |
+| `runs/` | Output di SplatPose (Parte 1): splat `.ply`, pose stimate, reference, anomaly map, metriche per classe | P1, P2 | P3 (splat), P4 (pose e reference) |
+| `synthetic/` | Dataset sintetico (Parte 2): immagini con difetto, reference, maschere, pose, metadati | P3 | P4 |
+| `heads/` | Checkpoint del detector (Parte 3) con la configurazione usata | P4 | Tutti |
+| `results/` | `metrics.csv` (una riga per esperimento) e figure qualitative per il report | Tutti, solo aggiungendo righe | Tutti |
+
+`data/` è **in sola lettura**: dopo il primo caricamento non si modifica più.
+
+### Nomi delle cartelle
+
+Il nome dice con quali impostazioni è stato prodotto il contenuto:
+
+```
+runs/repro_v210_it30k_k175/02Unicorn/        riproduzione con impostazioni di default
+runs/abl_views100_it30k_k175/02Unicorn/      ablation: 100 viste di training
+synthetic/v1_stain-missing-burr/02Unicorn/   prima versione del dataset sintetico
+heads/two-stream_syn-v1_effnet/              head two-stream addestrato su synthetic v1
+```
+
+- In ogni cartella di esperimento c'è un `info.json` con autore, data, impostazioni e **hash del commit git** usato.
+- Concordiamo una cartella di riferimento per la Parte 1 (es. `runs/repro_v210_it30k_k175/`): P3 e P4 lavorano su
+  quella e da quel momento nessuno la modifica.
+- Le estensioni usano lo stesso schema con prefisso `ext_` (es. `runs/ext_dinov2_.../`).
+
+### Regole pratiche con Colab
+
+1. **I dati si copiano, non si leggono da Drive**: a inizio sessione copiare gli zip da `data/` in `/content` e
+   decomprimerli lì. Leggere migliaia di immagini direttamente da Drive è lentissimo.
+2. **Salvare su Drive appena un passo finisce** (splat, pose, reference, metriche): se Colab si disconnette si perde
+   solo il passo in corso.
+3. **Tante immagini piccole → un `.zip` per classe** (dataset sintetico, reference): Drive le gestisce molto meglio.
+4. **Il codice non sta su Drive**, sta su GitHub. Su Drive solo dati e risultati.
+5. **Non cancellare il lavoro degli altri**: se qualcosa è sbagliato, scriverlo nel gruppo. Il cestino di Drive tiene i
+   file 30 giorni.
+6. **Un solo `metrics.csv`**: quello vivo è su Drive in `results/`. Alla fine si copiano in `results/` di questo repo
+   solo le tabelle finali del report.
 
 ## Primo avvio
 
