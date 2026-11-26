@@ -52,13 +52,17 @@ Principio: **ognuno scrive solo nella propria zona e legge da quelle degli altri
 
 | Cartella | Contenuto | Chi scrive | Chi legge |
 | --- | --- | --- | --- |
-| `data/` | `MAD-Sim.zip` originale, `MAD-Sim_3dgs.zip` (da `prepare_lego_ad.py`), `model.zip` (retrieval per `PAD_utils`) | P1, una volta sola | Tutti, a ogni sessione |
+| `data/` | `MAD-Sim.zip` e `MAD-Sim_3dgs.zip` (preparati con `prepare_lego_ad.py`), `model.zip` (retrieval per `PAD_utils`) | Una persona, una volta sola (sezione 5 del notebook di setup) | Tutti, a ogni sessione |
 | `runs/` | Output di SplatPose (Parte 1): splat `.ply`, pose stimate, reference, anomaly map, metriche per classe | P1, P2 | P3 (splat), P4 (pose e reference) |
 | `synthetic/` | Dataset sintetico (Parte 2): immagini con difetto, reference, maschere, pose, metadati | P3 | P4 |
 | `heads/` | Checkpoint del detector (Parte 3) con la configurazione usata | P4 | Tutti |
 | `results/` | `metrics.csv` (una riga per esperimento) e figure qualitative per il report | Tutti, solo aggiungendo righe | Tutti |
+| `env/` | Estensioni CUDA già compilate (cache) | Il notebook di setup, in automatico | Il notebook di setup |
 
 `data/` è **in sola lettura**: dopo il primo caricamento non si modifica più.
+
+**Ogni sessione Colab parte da [`notebooks/00_session_setup.ipynb`](notebooks/00_session_setup.ipynb)**: monta Drive,
+clona il proprio branch, compila le estensioni CUDA, copia i dati in locale e collega `runs/<EXP>/` su Drive.
 
 ### Nomi delle cartelle
 
