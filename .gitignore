@@ -381,3 +381,19 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,cuda,c++,linux,visualstudiocode,pycharm
  
+
+### aml-project-2 ###
+# Dati e output pesanti: vanno su Google Drive, mai su GitHub
+MAD-Real/
+MAD-Real
+results_*/
+outputs/
+*.ply
+*.npy
+*.npz
+*.pt
+*.tar
+# Sistema / Colab
+.DS_Store
+.ipynb_checkpoints/
+sample_data/
